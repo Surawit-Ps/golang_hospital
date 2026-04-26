@@ -15,6 +15,37 @@ func NewStaffRepository(db *gorm.DB) *staffRepository {
 	return &staffRepository{db: db}
 }
 
+type Staff struct {
+	Id         string    `gorm:"primaryKey"`
+	HospitalId string    `gorm:"index"`
+	Username   string    `gorm:"uniqueIndex"`
+	Password   string
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+}
+
+func staffToEntity(staff *Staff) *entity.Staff {
+	return &entity.Staff{
+		Id:         staff.Id,
+		HospitalId: staff.HospitalId,
+		Username:   staff.Username,
+		Password:   staff.Password,
+		CreatedAt:  staff.CreatedAt,
+		UpdatedAt:  staff.UpdatedAt,
+	}
+}
+
+func entityToStaff(staff *entity.Staff) *Staff {
+	return &Staff{
+		Id:         staff.Id,
+		HospitalId: staff.HospitalId,
+		Username:   staff.Username,
+		Password:   staff.Password,
+		CreatedAt:  staff.CreatedAt,
+		UpdatedAt:  staff.UpdatedAt,
+	}
+}
+
 func (r *staffRepository) CreateStaff(staff *entity.Staff) (*entity.Staff, error) {
 	staff.Id = uuid.New().String()
 	staff.CreatedAt = time.Now()
