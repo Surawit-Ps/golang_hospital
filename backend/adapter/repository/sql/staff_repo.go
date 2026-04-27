@@ -73,23 +73,8 @@ func (r *staffRepository) GetStaffById(id string) (*entity.Staff, error) {
 
 func (r *staffRepository) GetStaffByUsernameAndHospitalId(username, hospitalId string) (*entity.Staff, error) {
 	var staff Staff
-	query := r.db.Where("username = ?", username)
-
-	// If hospitalId is provided, filter by it
-	if hospitalId != "" {
-		// If hospitalId looks like a HospitalNumber (e.g., "HOSP0001"), resolve to UUID first
-		if len(hospitalId) == 8 && hospitalId[:4] == "HOSP" {
-			var hospital Hospital
-			if err := r.db.Where("hospital_number = ?", hospitalId).First(&hospital).Error; err != nil {
-				return nil, err
-			}
-			query = query.Where("hospital_id = ?", hospital.Id)
-		} else {
-			query = query.Where("hospital_id = ?", hospitalId)
-		}
-	}
-
-	if err := query.First(&staff).Error; err != nil {
+	err := r.db.Where("username = ?", username).First(&staff).Error
+	if err != nil {
 		return nil, err
 	}
 	staffEntity := staffToEntity(&staff)

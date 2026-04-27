@@ -1,2 +1,3 @@
--- Create hospital database if it doesn't exist
+-- Drop existing database if it exists and create fresh
+DROP DATABASE IF EXISTS hospital;
 CREATE DATABASE hospital;

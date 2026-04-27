@@ -99,10 +99,11 @@ func TestStaffService_LoginStaff_Success(t *testing.T) {
 	mockRepo.On("GetStaffByUsernameAndHospitalId", "staff1", "HOSP0001").Return(staff, nil)
 
 	service := NewStaffService(mockRepo)
-	token, err := service.LoginStaff("staff1", "123456", "HOSP0001")
+	token, loginStaff, err := service.LoginStaff("staff1", "123456", "HOSP0001")
 
 	assert.NoError(t, err)
 	assert.NotEmpty(t, token)
+	assert.Equal(t, "STAFF001", loginStaff.Id)
 	mockRepo.AssertExpectations(t)
 }
 
@@ -122,10 +123,11 @@ func TestStaffService_LoginStaff_InvalidCredentials(t *testing.T) {
 	mockRepo.On("GetStaffByUsernameAndHospitalId", "staff1", "HOSP0001").Return(staff, nil)
 
 	service := NewStaffService(mockRepo)
-	token, err := service.LoginStaff("staff1", "wrongpassword", "HOSP0001")
+	token, loginStaff, err := service.LoginStaff("staff1", "wrongpassword", "HOSP0001")
 
 	assert.Error(t, err)
 	assert.Empty(t, token)
+	assert.Nil(t, loginStaff)
 	mockRepo.AssertExpectations(t)
 }
 
@@ -135,10 +137,11 @@ func TestStaffService_LoginStaff_UserNotFound(t *testing.T) {
 	mockRepo.On("GetStaffByUsernameAndHospitalId", "invalid", "HOSP0001").Return(nil, errs.ErrNotFound)
 
 	service := NewStaffService(mockRepo)
-	token, err := service.LoginStaff("invalid", "123456", "HOSP0001")
+	token, loginStaff, err := service.LoginStaff("invalid", "123456", "HOSP0001")
 
 	assert.Error(t, err)
 	assert.Empty(t, token)
+	assert.Nil(t, loginStaff)
 	mockRepo.AssertExpectations(t)
 }
 
