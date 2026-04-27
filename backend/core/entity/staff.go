@@ -7,6 +7,7 @@ type Staff struct {
 	Username string
 	Password string
 	HospitalId string
+	Role string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

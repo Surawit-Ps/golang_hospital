@@ -6,10 +6,10 @@ import (	"backend/core/entity"
 )
 
 type HospitalServiceImpl struct {
-	hospitalPort ports.HospitalPort
+	hospitalPort ports.HospitalRepository
 }
 
-func NewHospitalService(hospitalPort ports.HospitalPort) ports.HospitalService {
+func NewHospitalService(hospitalPort ports.HospitalRepository) *HospitalServiceImpl {
 	return &HospitalServiceImpl{
 		hospitalPort: hospitalPort,
 	}
@@ -23,6 +23,6 @@ func (s *HospitalServiceImpl) GetHospitalInfo(id string) (*entity.Hospital, erro
 	return s.hospitalPort.GetHospitalById(id)
 }
 
-func (s *HospitalServiceImpl) GetHospitalByCode(code string) (*entity.Hospital, error) {
-	return s.hospitalPort.GetHospitalByCode(code)
+func (s *HospitalServiceImpl) GetAllHospitals() ([]entity.Hospital, error) {
+	return s.hospitalPort.GetAllHospitals()
 }

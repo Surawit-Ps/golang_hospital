@@ -4,13 +4,15 @@ import (
 	"backend/core/entity"
 )
 
-type StaffPort interface {
-	CreateStaff(staff *entity.Staff) (*entity.Staff, error)
+type StaffRepository interface {
+	CreateStaff(staff *entity.Staff) error
 	GetStaffById(id string) (*entity.Staff, error)
-	GetStaffByUsername(username string) (*entity.Staff, error)
+	GetStaffByUsernameAndHospitalId(username, hospitalId string) (*entity.Staff, error)
+	GetUser() (*entity.Staff, error)
 }
 
 type StaffService interface {
-	RegisterStaff(staff *entity.Staff) (*entity.Staff, error)
-	LoginStaff(username, password string) (*entity.Staff, error)
+	RegisterStaff(staff *entity.Staff) error
+	LoginStaff(username, password, hospitalId string) (string, *entity.Staff, error)
+	GetUser(id string) (*entity.Staff, error)
 }

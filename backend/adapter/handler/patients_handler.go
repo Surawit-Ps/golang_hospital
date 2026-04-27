@@ -3,6 +3,9 @@ package handler
 import (
 	"backend/core/entity"
 	"backend/core/ports"
+	"backend/pkg/errs"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,36 +20,71 @@ func NewPatientHandler(patientService ports.PatientService) *patientHandler {
 }
 
 func (h *patientHandler) RegisterPatient(c *gin.Context) {
+	user := c.MustGet("userID").(string)
+	if user == "" {
+		handleError(c, errs.ErrUnauthorized)
+		return
+	}
 	var patient entity.Patient
 	if err := c.ShouldBindJSON(&patient); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		handleError(c, err)
 		return
 	}
-	createdPatient, err := h.patientService.RegisterPatient(&patient)
+	err := h.patientService.RegisterPatient(&patient)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+		handleError(c, err)
 		return
 	}
-	c.JSON(201, createdPatient)
+	ResponseCreateSuccess(c, "Patient registered successfully", patient)
+
 }
 
 func (h *patientHandler) GetPatientInfo(c *gin.Context) {
+	user := c.MustGet("userID").(string)
+	if user == "" {
+		handleError(c, errs.ErrUnauthorized)
+		return
+	}
 	id := c.Param("id")
 	patient, err := h.patientService.GetPatientInfo(id)
 	if err != nil {
-		c.JSON(404, gin.H{"error": "patient not found"})
+		handleError(c, errs.ErrNotFound)
 		return
 	}
-	c.JSON(200, patient)
+	ResponseSuccess(c, patient)
 }
 
-func (h *patientHandler) GetPatientsByHospital(c *gin.Context) {
-	hospitalId := c.Param("hospitalId")
-	patients, err := h.patientService.GetPatientsByHospital(hospitalId)
+func (h *patientHandler) GetPatients(c *gin.Context) {
+	user := c.MustGet("userID").(string)
+	if user == "" {
+		handleError(c, errs.ErrUnauthorized)
+		return
+	}
+	hospitalId := c.MustGet("HospitalID").(string)
+	firstname := c.Query("firstname")
+	lastname := c.Query("lastname")
+	middlename := c.Query("middlename")
+	nationId := c.Query("nationId")
+	passportId := c.Query("passportId")
+	dateOfBirth := c.Query("dateOfBirth")
+	phone := c.Query("phone")
+	email := c.Query("email")
+	page := c.DefaultQuery("page", "1")
+	limit := c.DefaultQuery("limit", "10")
+	pageInt, err := strconv.Atoi(page)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+		handleError(c, errs.ErrInvalidPageNumber)
 		return
 	}
-	c.JSON(200, patients)
+	limitInt, err := strconv.Atoi(limit)
+	if err != nil {
+		handleError(c, errs.ErrInvalidLimitNumber)
+		return
+	}
+	patients, err := h.patientService.GetPatients(hospitalId, firstname, lastname, middlename, nationId, passportId, dateOfBirth, phone, email, pageInt, limitInt)
+	if err != nil {
+		handleError(c, err)
+		return
+	}
+	ResponseSuccess(c, patients)
 }
-
