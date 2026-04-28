@@ -64,7 +64,7 @@ func (r *staffRepository) CreateStaff(staff *entity.Staff) error {
 
 func (r *staffRepository) GetStaffById(id string) (*entity.Staff, error) {
 	var staff Staff
-	if err := r.db.First(&staff, "id = ?", id).Error; err != nil {
+	if err := r.db.First(&staff, " = ?", id).Error; err != nil {
 		return nil, err
 	}
 	staffEntity := staffToEntity(&staff)

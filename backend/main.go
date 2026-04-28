@@ -91,7 +91,7 @@ func main() {
 		// Patient routes
 		protected.POST("/patients", patientHandler.RegisterPatient)
 		protected.GET("/patients/:id", patientHandler.GetPatientInfo)
-		protected.GET("/patients", patientHandler.GetPatients)
+		protected.GET("/patients/search", patientHandler.GetPatients)
 	}
 
 	// Start the server

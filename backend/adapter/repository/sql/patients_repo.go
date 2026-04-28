@@ -95,7 +95,7 @@ func (r *patientRepository) CreatePatient(patient *entity.Patient) error {
 
 func (r *patientRepository) GetPatientById(id string) (*entity.Patient, error) {
 	var patient Patient
-	if err := r.db.First(&patient, "id = ? OR hospital_id = ?", id, id).Error; err != nil {
+	if err := r.db.First(&patient, "national_id = ? OR passport_id = ?", id, id).Error; err != nil {
 		return nil, err
 	}
 	patientEntity := patientToEntity(&patient)
